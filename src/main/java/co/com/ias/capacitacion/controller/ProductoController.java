@@ -17,8 +17,8 @@ import java.time.Duration;
 public class ProductoController {
     @Autowired
     private ProductoRepository productoRepository;
-private static  final Logger log= LoggerFactory.getLogger(ProductoController.class);
-    @GetMapping({"/listar"})
+     private static  final Logger log= LoggerFactory.getLogger(ProductoController.class);
+    @GetMapping({"/listar",""})
     public String listar(Model model) {
         Flux<Producto> productoFlux = productoRepository.findAll().map(producto -> {
             producto.setNombre((producto.getNombre().toUpperCase()));
@@ -42,5 +42,28 @@ private static  final Logger log= LoggerFactory.getLogger(ProductoController.cla
         model.addAttribute("producto ", new ReactiveDataDriverContextVariable(productoFlux,2));
         model.addAttribute("titulo", "listado de productos");
         return "listar";
+    }
+
+    @GetMapping("/listar-full")
+    public String listarFull(Model model) {
+        Flux<Producto> productoFlux = productoRepository.findAll().map(producto -> {
+            producto.setNombre((producto.getNombre().toUpperCase()));
+            return producto;
+        }).repeat(5000);
+
+        model.addAttribute("producto ", productoFlux);
+        model.addAttribute("titulo", "listado de productos");
+        return "listar";
+    }
+    @GetMapping("/listar-chunked")
+    public String listarChunked(Model model) {
+        Flux<Producto> productoFlux = productoRepository.findAll().map(producto -> {
+            producto.setNombre((producto.getNombre().toUpperCase()));
+            return producto;
+        }).repeat(5000);
+
+        model.addAttribute("producto ", productoFlux);
+        model.addAttribute("titulo", "listado de productos");
+        return "listar-chunked";
     }
 }
